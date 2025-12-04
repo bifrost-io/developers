@@ -1,13 +1,39 @@
 ---
-title: Bifrost for Developers
+title: Getting started
 description: Comprehensive documentation for developers building with Bifrost protocol
 ---
 
+<div className="flex justify-center w-full">
+  <div className="w-full max-w-4xl aspect-video">
+    <iframe className="w-full h-full" src="https://www.youtube.com/embed/DeWBzIs1oNg?si=R30vLMSlgO64SjGb" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+  </div>
+</div>
+
 Bifrost is a **staking yield layer** that establishes a standardized multi-chain liquid staking rewards infrastructure, delivering composable crypto-native yields for stablecoins, RWAs, and DeFi across various blockchains. Its modular design allows developers to tap into multi-chain staking rewards with one integration, greatly lowering development costs and enhancing user simplicity.
 
-## What is Next?
+## Understanding Bifrost
 
-<Cards>
-  <Card title="Learn more about Next.js" href="https://nextjs.org/docs" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.dev" />
-</Cards>
+The easiest way to understand Bifrost is to see it as a derivative issuer that provides liquidity for all pledged assets, issuing corresponding shadow assets during the bonding period of the original assets. At the same time, the shadow asset is a fungible Token that can be circulated in different DEXs, pools, protocols and across chains.
+
+As a DeFi protocol, Bifrost is aiming to solve the following issues in PoS ecosystems:
+- The paradox between staking rewards and DeFi yields
+- The balance between staking/circulating tokens and security of PoS chains
+- Staking rewards in cross-chain scenario
+
+According to the questions above, Bifrost's solution vToken (liquid staking voucher Token) enables users to convert their PoS tokens into vTokens in order to obtain staking liquidity and staking rewards synchronously, without barriers in cross-chain scenarios.
+
+## Why choose Bifrost?
+
+<Callout title="Extra reading">Have a look to the blog article: [A Deep Dive into Bifrost App Chain Liquid Staking Strategy](https://bifrost.io/blog/article-9)</Callout>
+
+### Liquid-Staking
+Mint vTokens on Bifrost (equals stake through Bifrost), you can control your underlying staking assets during the locked period.
+
+### Automatic Staking Management
+Bifrost Staking protocols run under the Bifrost pallets, earning staking rewards every era, without centralized risks.
+
+### Reduced Unstaking Period
+Bifrost SLP helps users to realize the possibility of early redemption by matching the real-time staking quantity with the redemption quantity at the protocol layer in the form of a queue. Theoretically, it can achieve faster redemption.
+
+### Extra Staking Returns + DeFi Yields
+Bifrost offers delegate staking for users by selecting a set of validators and rebalancing the rewards to give more profitable solutions. By holding vTokens, you will have chances to head into a world of yield scenarios.

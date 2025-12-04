@@ -1,45 +1,27 @@
-# bifrost-developers
+![banner image](/bifrost-mono-img.png)
+# Bifrost mono
+> The one repo to rule them all
 
-This is a Next.js application generated with
-[Create Fumadocs](https://github.com/fuma-nama/fumadocs).
+**Bifrost Developers** takes an unopinionated approach to developer development. Instead of forcing you to adopt our tech stack of choice, we provide you with code snippets, guidance, references, samples, public projects contributed by the community, bounty that you can leverage into whichever framework/technical stack/project that you are using or building.
 
-Run development server:
+The included resources aim to provide you with everything you need to launch a proof of concept, minimal viable product or even completed product. Comes with additional tools, documentation, and tricks for building onchain.
 
-```bash
-npm run dev
-# or
-pnpm dev
-# or
-yarn dev
-```
+Whether you're a hackathon participant or an ambitious entrepreneur looking to launch the next unicorn protocol, this monorepo is designed with you in mind.
 
-Open http://localhost:3000 with your browser to see the result.
+## Getting started
+Below is the directory of the monorepo.
 
-## Explore
+### [Builder program](/builder-program/)
+Information about our Builder program
 
-In the project, you can see:
+### [Docs](/docs/)
+Technical information related to Bifrost that you may find useful
 
-- `lib/source.ts`: Code for content source adapter, [`loader()`](https://fumadocs.dev/docs/headless/source-api) provides the interface to access your content.
-- `lib/layout.shared.tsx`: Shared options for layouts, optional but preferred to keep.
+### [Examples](/examples/)
+List of sample implementations contributed by the community for various integrations
 
-| Route                     | Description                                            |
-| ------------------------- | ------------------------------------------------------ |
-| `app/(home)`              | The route group for your landing page and other pages. |
-| `app/docs`                | The documentation layout and pages.                    |
-| `app/api/search/route.ts` | The Route Handler for search.                          |
+### [Awesome Bifrost](/awesome-bifrost/)
+List of cool projects utilizing Bifrost
 
-### Fumadocs MDX
-
-A `source.config.ts` config file has been included, you can customise different options like frontmatter schema.
-
-Read the [Introduction](https://fumadocs.dev/docs/mdx) for further details.
-
-## Learn More
-
-To learn more about Next.js and Fumadocs, take a look at the following
-resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Fumadocs](https://fumadocs.dev) - learn about Fumadocs
+## FAQs
+> we will add a FAQ section soon :D
