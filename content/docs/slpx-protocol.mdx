@@ -3,12 +3,48 @@ title: SLPx Protocol
 description: Understanding Bifrost SLPx Protocol
 ---
 
-## What is SLPx Protocol?
+## Crosschain architecture and SLPx
 
-SLPx (Staking Liquidity Protocol) is a protocol that allows users to stake their tokens and receive staking rewards.
+### Bifrost's Unique Approach
+Unlike Ethereum's liquid staking protocols, Bifrost from inception has supported Polkadot's Omni-chain ecosystem. This strategic choice allows Bifrost to address the cross-chain friction users face when minting and using vTokens across the Omni-chain.
 
-## How does SLPx Protocol work?
+### Why use a crosschain architecture?
+To understand the need for cross-chain architecture, consider a user who intends to mint vGLMR. They must first transfer GLMR from Moonbeam to the Bifrost-Polkadot chain. After minting, if the user wishes to use it on Moonbeam, they must transfer the vGLMR back to Moonbeam. This complex process requires multiple transactions, making it cumbersome for the user.
 
-SLPx Protocol works by allowing users to stake their tokens and receive staking rewards.
+However, Bifrost's cross-chain architecture and SLPx module simplify these complexities. They offer users a seamless experience by combining all vToken minting processes into one transaction on a single chain.
 
-## Why use SLPx Protocol?
+![SLPx architecture](/bifrost-slpx-architecture.jpeg)
+
+#### Simplified Process
+
+Under the crosschain architecture, instead of deploying SLP modules on multiple chains, Bifrost allows other chains to utilize the existing SLP modules on the Bifrost-Polkadot, Bifrost-Kusama, and Ethereum chains through crosschain remote calls.
+
+For instance, to mint vGLMR, users only need to initiate a minting request on Moonbeam. The remote call module on Moonbeam will cross-chain transfer the user's GLMR to the Bifrost-Polkadot chain, where it is minted into vGLMR. After minting, vGLMR is transferred back to the Moonbeam chain.
+
+Throughout this process, users do not perceive the underlying crosschain operations; they only experience the seamless minting of GLMR into vGLMR on Moonbeam.
+
+![Bifrost minting process](/bifrost-minting.png)
+
+The redemption of vGLMR to GLMR and swaps follows a similar mechanism.
+
+Like a chain franchise, this structure resembles a "headquarters + branch" system. Users interact with the branches on different chains. These branches communicate with the headquarters to obtain results, which are then presented to the users. This abstraction allows users to interact with the branches without being aware of the underlying crosschain operations.
+
+![Bifrost multichain](/bifrost-multichain.png)
+
+## Advantages of Cross-chain Architecture
+
+### Unified Liquidity
+
+Bifrost eliminates the need to bootstrap the liquidity of vTokens on multiple chains by consolidating liquidity onto a single chain. This optimization reduces user transaction fees and improves overall efficiency.
+
+For example, when users want to swap vGLMR to GLMR, they can utilize the unified liquidity pool on the Bifrost-Polkadot chain via remote calls. This approach ensures better transaction prices and execution, avoiding the additional costs associated with bootstrapping liquidity on other chains like Moonbeam.
+
+### Crosschain composability
+
+<Callout>
+Have a look to the blog article: [Bifrost Tokenomics and vTokens Application Scenarios](https://bifrost.io/blog/bifrost-tokenomics-and-vtokens-application-scenarios)
+</Callout>
+
+Furthermore, when a DeFi project seeks to integrate vTokens, it no longer needs to integrate SLP modules from different chains separately. Instead, the project only needs to communicate with the primary SLP protocol on a single chain (or a few selected chains).
+
+The SLP modules on Bifrost-Polkadot, Bifrost-Kusama, and Ethereum maintain the global and comprehensive status of vTokens. Ideally, in a fully interoperable blockchain ecosystem, the SLP module on Bifrost-Polkadot will hold the global and comprehensive status of vTokens, streamlining the integration process for various DeFi projects.
