@@ -3,4 +3,47 @@ title: Protocol Security
 description: Understanding Bifrost Protocol Security
 ---
 
-## What is Protocol Security?
+## Bifrost security model
+In the world of DeFi, Liquid Staking has surpassed decentralized exchanges (DEXs) to achieve the highest Total Value Locked (TVL). Liquid Staking Token (LST) protocols manage substantial assets, significantly impacting the security and functionality of their underlying Proof-of-Stake (PoS) chains.
+
+[Bifrost's crosschain architecture](https://bifrost.io/blog/a-deep-dive-into-crosschain-architecture-and-slpx) enhances the interoperability and efficiency of DeFi applications. However, effective cross-chain communication and seamless user experiences require a robust security framework. Bifrost addresses this need with a comprehensive security model that protects staked assets and maintains network integrity.
+
+## Key Aspects of Bifrost's Security Model
+
+### Polkadot's Shared Security
+The Bifrost Polkadot and Bifrost Kusama chains are parachains of Polkadot and Kusama, respectively. **Their security and resistance to reorganization are protected by the relay chain.**
+
+As widely known, Polkadot employs a shared architecture where the relay chain randomly assigns validators to parachains and verifies their blocks. The blocks of the relay chain will include the blocks of the parachain, providing data availability for the parachains. This mechanism is the foundation of Polkadot's shared security.
+
+Parachains do not require running validators, nor do they need to increase validator numbers to promote decentralization. Instead, they operate with a limited number of collator nodes. The role of collator nodes functions similarly to the Sequencer in Ethereum L2, which is responsible for collecting and ordering transactions in the parachains. The number of collators does not need to be excessive; it only needs to ensure network availability and make transactions less prone to censorship. Currently, the Bifrost Polkadot chain has over 32 collator nodes, which is more than sufficient to maintain robust network performance.
+
+### Crosschain Communication Based on XCMP and XCM
+
+In Bifrost's cross-chain architecture, there's a significant involvement of cross-chain communication. The security of cross-chain bridges is a well-known challenge in the blockchain space. So, how does Bifrost ensure the security of cross-chain communication? The answer lies in the cross-chain communication mechanism of Polkadot. Polkadot aims not only to create a platform for shared security but also to achieve seamless cross-chain interoperability. Polkadot accomplishes this through the Cross-Chain Message Passing (XCMP) protocol and the Cross-Consensus Message (XCM) format.
+
+### How XCMP works
+
+- Cross-chain messages enter the Egress (exit queue) of the sending chain.
+- Collators of the target chain collect these messages from the Egress of other chains and place them into their Ingress (entry queue).
+
+- Messages are included in the relay chain's blocks and finalized, then executed by the target chain.
+
+In summary, XCMP ensures fast, secure, ordered, and cost-effective cross-chain message delivery between Polkadot parachains.
+
+### How XCM works:
+- XCM is a message format for cross-chain communication between Polkadot parachains.
+- XCM messages are included in the relay chain's blocks and finalized, then executed by the target chain.
+- XCM messages are executed by the target chain's consensus mechanism.
+
+In summary, XCM ensures fast, secure, ordered, and cost-effective cross-chain message delivery between Polkadot parachains.
+
+
+When XCMP is used for communication between parachains, XCM is used to ensure that these chains can understand each other's messages and know how to execute them. Polkadot's vision for XCM extends beyond the cross-chain communication within Polkadot. It aims to be adopted by a broader range of heterogeneous blockchains. Therefore, it is named the Cross-Consensus Message format.
+
+For a more in-depth interpretation of the operational mechanisms of XCMP and XCM, Bifrost provides detailed insights in this article: How Bifrost Supports vMOVR and vGLMR Based on XCM.
+
+However, Bifrost also acknowledges that heterogeneous cross-chain infrastructure is currently not mature. Therefore, it has not opted for a radical approach to fully implement the cross-chain architecture but instead retained the SLP modules on Ethereum and Kusama. Nevertheless, as the cryptocurrency industry develops, secure and reliable heterogeneous cross-chain solutions are expected to emerge.
+
+### Non-custodial Mechanism and Rigorously Audited Code
+
+Bifrost adopts a fully decentralized approach to manage staked assets. All processes are completed through decentralized contracts or runtime, without any human intervention and the need to trust any third party, including the Bifrost development team.
