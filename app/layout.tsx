@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     siteName: "Bifrost Developers",
     images: [
       {
-        url: "/bifrost-full-mono.svg",
+        url: "/bifrost-developers.png",
         width: 1200,
         height: 630,
         alt: "og-image",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: "Bifrost Developers",
     description: "Comprehensive documentation for developers building with Bifrost protocol",
     creator: "@bifrost",
-    images: ["/bifrost-full-mono.svg"],
+    images: ["/bifrost-developers.png"],
   },
 };
 
