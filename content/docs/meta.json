@@ -1,9 +1,13 @@
 {
   "pages": [
     "index",
+    "unique-value-propositions",
+    "slpx-protocol",
+    "protocol-security",
+    "vtokens",
     "guides",
     "builder-programs",
     "hackathons"
   ],
-  "defaultOpen": true
+  "defaultOpen": false
 }

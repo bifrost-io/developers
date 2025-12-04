@@ -1,0 +1,8 @@
+{
+  "pages": [
+    "manta-integration",
+    "moonbeam-integration",
+    "soneium-integration"
+  ],
+  "defaultOpen": false
+}

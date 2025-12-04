@@ -1,0 +1,231 @@
+---
+title: vETH
+description: Understanding vETH
+---
+
+## What is vETH?
+
+Bifrost's non-custodial liquid staking solution allows users to **stake their ETH and receive vETH (voucher ETH) in exchange, with staking rewards reflected in vETH's value**.
+
+By using the bridge between Ethereum, L2s and Polkadot, **vETH can exist in both EVM and Substrate environment**.
+
+<Callout title="Staking rewards">
+Staking rewards automatically add to the vETH exchange price, no manual claim. The longer vETH postion holding, the greater amount of ETH can be exchanged back while redemption.
+</Callout>
+
+### vETH vs ETH LSTs in EVM?
+
+vETH can operate (mint, hold, and transfer) simultaneously across both EVM and Substrate environments, enabling EVM users to access better yield opportunities within the Polkadot ecosystem.
+
+## Why vETH?
+
+<Callout type="success">
+**Liquidity and capital efficiency**
+</Callout>
+
+vETH as a liquid staked ETH has enough liquidity to provide users an option to hedge risk during unforeseen market conditions (price decline during locking period), allowing holders the capability to manage their exposures and funds.
+
+<Callout type="success">
+**Automatically Staking rewards capturing without scenario limitations**
+</Callout>
+
+Staking reward apprecates the value of vETH. vETH Value = SLP pledged ETH(SUM) / vETH Total Issuance. Thus, vETH automatically appreciating the value with staking rewards wherever it is.
+
+<Callout type="success">
+**No Technical Background Needed**
+</Callout>
+
+Minting ETH to vETH which represents holding a representation in-locking ETH with staking rewards, requires no technical knowledge for users in running with Ethereum validators.
+
+<Callout type="success">
+**Extra yield senarios**
+</Callout>
+
+vETH represents staked ETH, but simultaneously is also a yield bearing liquid-derivative, which means it can be used in various DeFi scenarios such as liquidity provision and farming on DEXs, as well as in borrowing and lending use cases. Specifically, vETH can be deposited as a collateral asset for yield leveraging on money markets.
+
+<Callout type="success">
+**Cross-chain**
+</Callout>
+
+By leveraging SLPx, vETH can easily mint/redeem/trasnfer across Polkadot, Ethereum, L2s via Snowbridge and Hyperbridge.
+
+## FAQ
+
+**What is the minimum stake (as known as Deposit)?**
+
+*It's 0.01 ETH.*
+
+**What is the maximum stake (as known as Deposit)?**
+
+*It's unlimited.*
+
+**How does the protocol protect the value of vETH?**
+
+*All staked ETH and the insurance of vETH are storaged in Bifrost Chain, protected by Bifrost OpenGov and Polkadot shared security.*
+
+**How can I access my deposit and rewards?**
+
+*vETH is a yield-bearing token where staking rewards increase the token's value. When you redeem your vETH, you'll receive both your initial deposit and accumulated rewards.*
+
+[**How does vETH works on Bifrost?**](#minting-redeeming-veth-on-bifrost)
+
+*vETH is issued or burned on Bifrost chain, ETH is bridged between Bifrost and Ethereum via Snowbridge.*
+
+[**What is&#x20;*****Snowbridge*****?**](https://docs.snowbridge.network/)
+
+*In the Polkadot ecosystem, Snowbridge is a crucial cross-chain communication protocol designed to enable trustless bidirectional bridging between Polkadot and Ethereum.*
+
+[**How does vETH works on Ethereum?**](#minting-redeeming-veth-on-ethereum)
+
+*SLPx allows users to directly mint and redeem vETH on Ethereum.*
+
+[**What is SLPx?**](https://docs.bifrost.io/for-builders/build-with-slpx/overview)
+
+Bifrost SLPx streamlined the complex process of bridging funds to destination chain, allowing users to liquid stake on any chain without leaving UI to interact with bridges.
+
+[**How does vETH works on L2s?**](#minting-redeeming-veth-on-l2)
+
+*SLPx allows users to directly mint and redeem vETH on Base, Arbitrum, BSC Chain and OP. The asset bridging is backed by Hyperbridge.*
+
+[**What is&#x20;*****Hyperbridge?***](https://docs.hyperbridge.network/)
+
+*HyperBridge leverages **advanced cryptographic proofs** (such as zk-SNARKs or Merkle proofs) and **Polkadot’s shared security model** to create a **trustless, scalable, and gas-efficient** cross-chain infrastructure.*
+
+## How does it works?
+
+### Minting/Redeeming vETH on Bifrost
+
+#### Minting Process
+
+1. Mint on Bifrost using `ETH`, users immediately receive `vETH`
+2. `ETH` is bridged through `Snowbridge` to the SLP contract on Ethereum
+3. The SLP contract on Ethereum combines with SSV to perform wrapped staking of `ETH`
+4. Bifrost vETH Oracle periodically fetches ETH Staking rewards and synchronizes to the Bifrost network for exchange rate adjustment
+
+#### Redemption Process
+
+1. Use `vETH` on Bifrost for redemption, `vETH` is burned and corresponding redemption request orders are created
+2. Bifrost calculates the number of exit nodes needed through Oracle, and Oracle sends exit node requests to the SLP protocol on Ethereum
+3. SLP protocol executes node exit operations through SSV and waits for the exit node `ETH` to arrive
+4. The redeemed `ETH` is bridged through `Snowbridge` to the Bifrost SLP protocol
+5. SLP protocol executes redemption according to the redemption request queue, users finally receive `ETH`
+
+### Minting/Redeeming vETH on Ethereum
+
+#### Minting Process
+
+1. Call the SLPx contract to deposit `ETH` for minting
+2. SLPx contract sends `ETH` and minting request to Bifrost SLPx through `Snowbridge`
+3. SLPx executes minting and bridges `vETH` and `ETH` to the SLP contract on Ethereum through `Snowbridge`
+4. User receives `vETH`
+
+#### Redemption Process
+
+1. Call the SLPx contract to deposit `vETH` for redemption
+2. `vETH` and redemption request are bridged to Bifrost SLPx through `Snowbridge`
+3. SLPx executes redemption, and after redemption is credited, `ETH` is bridged to the Ethereum user address through `Snowbridge`
+
+### Minting/Redeeming vETH on L2
+
+#### Minting Process
+
+1. Call the SLPx contract to deposit `ETH` for minting
+2. SLPx contract sends `ETH` and minting request to Bifrost SLPx through `Hyperbridge`
+3. SLPx executes minting and bridges `vETH` to the SLP contract on Ethereum through `Hyperbridge`
+4. SLP contract bridges `vETH` to the L2 user
+
+#### Redemption Process
+
+1. Transfer `vETH` to SLPx contract to send redemption request
+2. `vETH` and redemption request are bridged to Bifrost SLPx through `Hyperbridge`
+3. SLPx executes redemption, and after redemption is credited, bridges to the L2 user address through `Hyperbridge`
+
+## SSV and DKG in vETH
+
+vETH 3.0 uses the SSV network to implement a trustless staking pool.
+
+After users stake ETH, they receive vETH, while the operation of the underlying ETH validators is maintained by the SSV Cluster - **different unique groups of operators running by various parties.**
+
+In conclusion, SSV uses distributed key sharing (DKG) and multi-party computation (MPC) to shard validator keys across multiple node operators, avoiding single points of failure and enhancing the security and censorship resistance of vETH staking.
+
+## vETH Contracts
+
+Stay tuned.
+
+## Appendix
+
+### ETH 2.0 Deposit Records
+
+vETH minting refers to the process in which users invest any amount of ETH to participate in Ethereum 2.0 staking and obtain the corresponding certificate vETH. After minting, users can sell vETH at any time to gain liquidity. [vETH minting](https://bifrost.app/vstaking/vETH).
+
+vETH minting vETH will be divided into four stages to achieve complete decentralization, and is currently in the second stage of development. The ETH invested by users will be put into the official Ethereum 2.0 Deposit contract to complete the staking operation. This operation process is transparent and open, but the smart contract calling process is more complicated. The contract calls involved are 4 levels of concatenated calls:
+
+> Multisig Management Contract » BatchDeposit Contract » vETH Mint Contract » ETH 2.0 Official Deposit Contract
+
+The BatchDeposit contract is upgradeable, and a layer of proxy contract is encapsulated on it. There is a Worker account in the BatchDeposit contract, which can be replaced by multi-signature operations, and is specially used to store the Deposit parameters on the chain. This Worker role is currently played by Bifrost. After the Worker fills in the parameters, it can initiate another transaction that triggers Deposit. After multiple partners have signed and approved it, the ETH invested by the user will be deposited into the Ethereum 2.0 official Deposit contract.
+
+The parameters filled in by Bifrost are currently provided by [InfStones](https://infstones.com/) and [Ankr](https://www.ankr.com/) respectively, and are double-checked by InfStones and Ankr before multi-signature approval. After each multi-signature operation is completed, the Deposit transaction information will be publicly displayed in the community, and users can check the corresponding parameter information through Etherscan. Through these parameter information, the actual staking income can be queried and counted. Before the launch of the Bifrost mainnet, staking rewards are distributed in the form of ERC20-vETH. After the Bifrost mainnet goes online, all ERC20-vETH will be mapped to the Bifrost mainnet, and the subsequent staking income will be reflected in the minting price adjustment formula. Check [how Bifrost vToken works](https://wiki.bifrost.finance/getting-started/understanding-bifrost/liquid-staking-derivative).
+
+**Multisig Parties**
+
+{/* <table data-header-hidden><thead><tr><th width="568">地址</th><th>参与方</th></tr></thead><tbody><tr><td>Address</td><td>Parties</td></tr><tr><td>0x4882328c14bb1a9a5c4F5E2B21bE345A72A1f638</td><td>InfStones</td></tr><tr><td>0x0620Ca0ca30c917aB62d119E5d91A9a954d31604</td><td>LongHash</td></tr><tr><td>0x146eE71e057e6B10eFB93AEdf631Fde6CbAED5E2</td><td>Ankr</td></tr><tr><td>0x4f62839ccD37c9a41999ceDB71cc9B4E8B2eBB97</td><td>DFG</td></tr><tr><td>0xdd4bB59E9088987CbEe31cC5a8e63cD8FEC12065</td><td>Bifrost</td></tr></tbody></table> */}
+
+The current parameter configuration is that any 3 of the 5 participants sign the Deposit operation to take effect.
+
+**Check Multisig**
+
+[https://gnosis-safe.io/app/#/safes/0x7c7FCb39BAA90f2FDef625e7B0b0e858D579CD8E/transactions](https://gnosis-safe.io/app/#/safes/0x7c7FCb39BAA90f2FDef625e7B0b0e858D579CD8E/transactions)
+
+**MintDrop Contract**
+
+[https://etherscan.io/address/0xec1d6163e05b3f5d0fb8f354881f6c8b793ad612](https://etherscan.io/address/0xec1d6163e05b3f5d0fb8f354881f6c8b793ad612)
+
+**vETH Contract**&#x20;
+
+[https://etherscan.io/address/0xc3d088842dcf02c13699f936bb83dfbbc6f721ab](https://etherscan.io/address/0xc3d088842dcf02c13699f936bb83dfbbc6f721ab)
+
+[https://etherscan.io/token/0xc3d088842dcf02c13699f936bb83dfbbc6f721ab](https://etherscan.io/token/0xc3d088842dcf02c13699f936bb83dfbbc6f721ab)
+
+**vETH Minting Records** (Updated on 2021-02-18, Deposit total 162 x 32 = 5184 ETH)
+
+1 [Deposit InfStones first test](https://etherscan.io/tx/0xb2387953eb774cfc9744b2fdb92ef4fb59f51df4efeff5ce8f583be5bc223061#eventlog)&#x20;
+
+9 [Deposit InfStones](https://etherscan.io/tx/0x57b76faf452a57301c6cdbb9fdebd8b549f42cac826cf22d9d1d3b19401f5940#eventlog)&#x20;
+
+10 [Deposit InfStones](https://etherscan.io/tx/0x8aa70ff63a5a1819a165cb558b3ed2597cd13ee39ef0abf7008386ca78656424#eventlog)&#x20;
+
+27 [Deposit InfStones](https://etherscan.io/tx/0x8c87a2fce07a98a09a37ded12a460cb2c3868950392b369941c6a8fa63ea4a99#eventlog)&#x20;
+
+1 [Deposit Ankr first test](https://etherscan.io/tx/0x046647b4e948e5a6a89bdb5da7c40d73564669a61d0b8a516bd2bd42adb46967#eventlog)&#x20;
+
+14 [Deposit Ankr](https://etherscan.io/tx/0x9153c1f2db67a650bf1a2c6607311633abac06c5434ae819d864e3b3e1c34acd#eventlog)&#x20;
+
+50 [Deposit InfStones](https://etherscan.io/tx/0x45f9f2ce3f6f74333b5e6e88fba0f97e315f24473f9218ccd36ebea43e9cc3e0#eventlog)&#x20;
+
+50 [Deposit InfStones](https://etherscan.io/tx/0x6aa751437e978f1323c75f7c954c8dad5287d9d131cead625e00be3f3f1fe065#eventlog)
+
+**Updated on 2021-03-11, Deposit total 200 x 32 = 6400 ETH**
+
+50 [Deposit InfStones](https://etherscan.io/tx/0x15db182214e0d88f27953cbddc587aa4b28a191aa6800c8a01366dc5b0aed450#eventlog)&#x20;
+
+50 [Deposit InfStones](https://etherscan.io/tx/0x171683982ddcf4ab1f0a6e2770e46cb0eccf843a9a67fed872127c1ff89f27dd#eventlog)&#x20;
+
+50 [Deposit Ankr](https://etherscan.io/tx/0x3efacae16c2a95c0be67f202044de7e7706e9c9db69789a9d71490c732091162#eventlog)&#x20;
+
+50 [Deposit Ankr](https://etherscan.io/tx/0xabbf2fc950e384e250479fbcd4837a53b2f1de07a6b1b539b6aca1c979906e3b#eventlog)
+
+**Updated on 2021-03-25, Deposit total 100 x 32 = 3200 ETH**
+
+50 [Deposit InfStones](https://etherscan.io/tx/0xcd60dd1daa8b7b6566f7d156a9bc573c85908bb5dd0a3cc6e3e2635beafc17aa#eventlog)&#x20;
+
+50 [Deposit InfStones](https://etherscan.io/tx/0x61d0f288118d56f1de975609df0850c4c22c0918f03db51af6ea3b7642a512ad#eventlog)
+
+**Updated on 2021-04-12, Deposit total 100 x 32 = 3200 ETH**
+
+50 [Deposit Ankr](https://etherscan.io/tx/0x811ea4c01284b9c04f81df3867693e9d675888f955cf0f883ec7df959b8cb5ae#eventlog)
+
+50 [Deposit Ankr](https://etherscan.io/tx/0x7a6bacb0c17fd7ec3da220850a4a8b271bc4c785e76f60905f74a00bfc6d4d1b#eventlog)
+
+**The total amount of ETH deposited in the Deposit contract: 5184 + 6400 + 3200 = 17984 ETH**
+
+Continue to update...
