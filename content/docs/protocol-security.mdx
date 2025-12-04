@@ -37,13 +37,31 @@ In summary, XCMP ensures fast, secure, ordered, and cost-effective cross-chain m
 
 In summary, XCM ensures fast, secure, ordered, and cost-effective cross-chain message delivery between Polkadot parachains.
 
+![Bifrost XCM](/bifrost-xcm.jpeg)
 
 When XCMP is used for communication between parachains, XCM is used to ensure that these chains can understand each other's messages and know how to execute them. Polkadot's vision for XCM extends beyond the cross-chain communication within Polkadot. It aims to be adopted by a broader range of heterogeneous blockchains. Therefore, it is named the Cross-Consensus Message format.
 
-For a more in-depth interpretation of the operational mechanisms of XCMP and XCM, Bifrost provides detailed insights in this article: How Bifrost Supports vMOVR and vGLMR Based on XCM.
+For a more in-depth interpretation of the operational mechanisms of XCMP and XCM, Bifrost provides detailed insights in this article: [How Bifrost Supports vMOVR and vGLMR Based on XCM](https://bifrost.io/blog/how-bifrost-supports-v-movr-and-v-glmr-based-on-xcm).
 
 However, Bifrost also acknowledges that heterogeneous cross-chain infrastructure is currently not mature. Therefore, it has not opted for a radical approach to fully implement the cross-chain architecture but instead retained the SLP modules on Ethereum and Kusama. Nevertheless, as the cryptocurrency industry develops, secure and reliable heterogeneous cross-chain solutions are expected to emerge.
 
 ### Non-custodial Mechanism and Rigorously Audited Code
 
 Bifrost adopts a fully decentralized approach to manage staked assets. All processes are completed through decentralized contracts or runtime, without any human intervention and the need to trust any third party, including the Bifrost development team.
+
+![Bifrost non-custodial mechanism](/bifrost-mechanism.png)
+
+Furthermore, Bifrost's on-chain code is open source, allowing for public scrutiny and vulnerability reporting. The code has been rigorously audited by multiple security firms, including Beosin, Slowmist, and TokenInsight. Since its inception in 2019, Bifrost has maintained a flawless security record, demonstrating its resilience in terms of code security.
+
+### Secure Validator Set and Slash Protection
+Apart from the risks of intentional misconduct and code vulnerabilities, users' staked assets may also face the risk of slashing. Staked assets essentially serve as collateral for running nodes. If a node engages in improper behavior that disrupts the network, a portion or all of the malicious node's staked funds may be slashed by the network.
+
+An LST protocol that selects validators irresponsibly can expose LST asset holders to slashing losses, which could manifest as a decrease in the exchange rate between LST and the original token.
+
+To minimize users' exposure to slashing losses, Bifrost has implemented several measures:
+
+- **Rigorous Validator Selection**: Bifrost evaluates validators not only based on profitability but also by considering factors such as the node's leverage ratio (self-staking ratio) and historical credibility. Detailed criteria and methods for selecting validators will be discussed in the next chapter.
+- **Proactive Node Switching**: In the event of a slashing risk, Bifrost can immediately switch nodes to prevent further losses, a capability that individual stakers typically lack.
+- **vToken Vault**: Bifrost has established an insurance pool called the vToken Vault, allocating 5% of the protocol's income to it. If slashing occurs, this pool compensates users for their losses. If no slashing occurs, the amount in the vToken Vault accumulates over time. The more funds accumulated, the stronger the compensation capability.
+
+For a more detailed explanation of how Bifrost distributes, mitigates, and compensates for slashing risks, refer to [How Bifrost provides an insurance mechanism for vToken holders against the Slash risk](https://bifrost.io/blog/how-bifrost-provides-an-insurance-mechanism-for-v-token-holders-against-the-slash-risk).
