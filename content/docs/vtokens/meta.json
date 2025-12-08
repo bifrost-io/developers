@@ -1,7 +1,12 @@
 {
   "pages": [
     "veth",
-    "vdot"
+    "vdot",
+    "vksm",
+    "vglmr",
+    "vmovr",
+    "vmanta",
+    "vastr"
   ],
   "defaultOpen": false
 }

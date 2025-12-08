@@ -1,0 +1,12 @@
+{
+  "pages": [
+    "ethereum",
+    "arbitrum",
+    "base",
+    "bnbchain",
+    "manta",
+    "moonbeam",
+    "soneium"
+  ],
+  "defaultOpen": false
+}

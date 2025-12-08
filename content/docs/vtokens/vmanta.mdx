@@ -1,0 +1,72 @@
+---
+title: vMANTA
+description: Understanding vMANTA
+---
+
+## What is vMANTA?
+
+vMANTA (voucher MANTA) is a shadow token of staked MANTA, with fully underlying MANTA reserve and yield-bearing feature of MANTA staking reward. Users can deposit MANTA into Bifrost SLP protocol and get vMANTA as return, vMANTA can be traded in the open market or be redeemed back to MANTA. Holding vMANTA equals to holding the MANTA staking position, staking rewards appreciate the exchange price of vMANTA.
+
+<Callout title="Staking rewards">
+Staking rewards automatically add to the vMANTA exchange price, no manual claim. The longer vMANTA postion holding, the greater amount of MANTA will be exchanged back when redemption.
+</Callout>
+
+## Why vMANTA?
+
+<Callout type="success">
+**Liquid Staking**
+</Callout>
+
+The product allows users to delegate MANTA for liquid vToken, (vMANTA). vMANTA will keep receiving staking rewards and can continue to be used in Bifrost and Polkadot-based DeFi for additional rewards.
+
+<Callout type="success">
+**Automatically Staking rewards capturing without scenario limitations**
+</Callout>
+
+SLP will issue Staking rewards to vMANTA by adjusting the price of vMANTA / MANTA upwards. vMANTA Rate = SLP Staking MANTA (SUM) / vMANTA Total Issuance.
+
+<Callout type="success">
+**Floating redemption period, vMANTA ≤ 168 hours**
+</Callout>
+
+While Manta’s original chain Staking has a fixed revoke period, Bifrost SLP helps users to realize the possibility of **early vMANTA redemption** by matching the real-time vMANTA minting quantity with the redemption quantity at the protocol layer in form of a queue.
+
+<Callout type="success">
+**Higher Staking Yield**
+</Callout>
+
+In the SLP protocol, the protocol screens **verified nodes** through governance (subsequently increasing with the overall staking volume) and adds multiple filters such as the **number of nominees and** **history of blocks out to maximize the return of this verifier portfolio** while ensuring that none of the nodes have experienced slashes.
+
+<Callout type="success">
+**Multi-environment Compatibility**
+</Callout>
+
+vMANTA is one of Substrate assets in Bifrost parachain, by using the [HRMP](https://wiki.polkadot.network/docs/learn-crosschain#xcmp-cross-chain-message-passing) channels between Bifrost and others, it can be easily utilized in EVM, WASM and Substarte competiable parachains.
+
+## How it works?
+
+vMANTA is issued on Bifrost chain, but it can be directlyminted on Ethereum - powered by SLPx 2.0.
+
+### Mint vMANTA
+
+1. User mints vMANTA by interact with vMANTA Vault contract;
+2. Bifrost receives MANTA and bridge to Ethereum mainnet Vault contract;
+3. The Vault contract stakes MANTA to Symbiotic.
+
+### Redeem vMANTA
+
+1. User bridges vMANTA back to Ethereum mainnet and interact with vMANTA Vault contract;
+2. The Vault contract unstakes MANTA from Symbiotic;
+3. User receives redeemed MANTA.
+
+### MANTA Reward
+
+The MANTA reward will be reinvested on Manta, and the Oracle will transmit the reward data to the MANTA Ready Pool to adjust the vMANTA exchange rate.
+
+$$
+vMANTA rate=(StakedMANTA+StakingReward)/vMANTA Allocation
+$$
+
+💡 Read more detailed info in the following sections.
+
+***

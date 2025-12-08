@@ -1,0 +1,294 @@
+---
+title: vASTR
+description: Understanding vASTR
+---
+
+## What is vASTR?
+
+vASTR (voucher ASTR) is a shadow token of staked ASTR, with fully underlying ASTR reserve and yield-bearing feature of ASTR staking reward. Users can deposit ASTR into Bifrost SLP protocol and get vASTR as return, vASTR can be traded in the open market or be redeemed back to ASTR. Holding vASTR equals to holding the ASTR staking position, staking rewards appreciate the exchange price of vASTR.
+
+<Callout title="Staking rewards">
+Staking rewards automatically add to the vASTR exchange price, no manual claim. The longer vASTR postion holding, the greater amount of ASTR will be exchanged back when redemption.
+</Callout>
+
+## Why vASTR?
+
+<Callout type="success">
+**Liquid Staking**
+</Callout>
+
+The product allows users to delegate ASTR for liquid vToken, (vASTR). vASTR will keep receiving staking rewards and can continue to be used in Bifrost and Polkadot-based DeFi for additional rewards.
+
+<Callout type="success">
+**Automatically Staking rewards capturing without scenario limitations**
+</Callout>
+
+SLP will issue Staking rewards to vASTR by adjusting the price of vASTR / ASTR upwards. vASTR Rate = SLP Staking ASTR (SUM) / vASTR Total Issuance.
+
+<Callout type="success">
+**Floating redemption period, vASTR ≤ 240 hours**
+</Callout>
+
+While ASTR’s original chain Staking has a fixed revoke period, Bifrost SLP helps users to realize the possibility of **early vASTR redemption** by matching the real-time vASTR minting quantity with the redemption quantity at the protocol layer in form of a queue.
+
+<Callout type="success">
+**Multi-environment Compatibility**
+</Callout>
+
+vASTR is one of Substrate assets in Bifrost parachain, by using the [HRMP](https://wiki.polkadot.network/docs/learn-crosschain#xcmp-cross-chain-message-passing) channels between Bifrost and others, it can be easily utilized in EVM, WASM and Substarte competiable parachains.
+
+## How it works?
+
+vASTR is minted by Bifrost SLP pallet, so firstly users have to call XCM cross chain transfer ASTR from Astar to Bifrost Parachain.
+
+### Mint vASTR
+
+1. Users initiate a vASTR mint order, SLP protocol transfers ASTR to ASTR Ready Pool (which is an order pool accumulates all mint and redeem orders), SLP mints vASTR for users;
+2. ASTR Ready Pool matches Mint amount and Redeem amount;
+3. Oracle monitor matching results from ASTR Ready Pool and send messages to ASTR-Bifrost SLP addresses;
+4. Bifrost SLP addresses execute Staking to SLP ASTR DApp staking set, Oracle queries the successful messages and send them back to Bifrost ASTR Ready Pool, get ready for the next matching.
+
+About SLP Oracle/backend service: The SLP backend service is using ⅘ multisig nodes, responsible for adjusting the exchange rate in each round, returning the due amount to the current redeem due user, checking the ledger, summarizing the pledge amount in a new round, and calling the corresponding SLP module function. In order to more flexibly handle the increase or decrease of users' pledge in each round, we will adopt a decentralized delegation relationship and a small-amount pledge strategy to increase the efficiency of the use of funds.
+
+### Redeem vASTR
+
+1. Users initiate a vASTR redeem orders to ASTR Ready Pool;
+2. ASTR Ready Pool matches Redeem amount and Mint amount, and dispatches the remaining ASTR to vASTR redeem orders, SLP destroys the redeemed vASTR amount;
+3. Oracle monitor redeem orders from Bifrost chain and send messages to ASTR-Bifrost SLP addresses;
+4. Bifrost SLP addresses execute Redeem to SLP ASTR DApp staking set and send redeemed ASTR back to Bifrost parachain, Oracle queries all these messages and send them back to Bifrost ASTR Ready Pool, get ready for the next round matching.
+
+### ASTR Reward
+
+The ASTR reward will be reinvested on ASTR, and the Oracle will transmit the reward data to the ASTR Ready Pool to adjust the vASTR exchange rate.
+
+$$
+vASTR rate=(StakedASTR+StakingReward)/vASTR Allocation
+$$
+
+💡 Read more detailed info in the following sections.
+
+***
+
+## SLP-vASTR Technology Implementation
+
+### Overall operation process
+
+The entire SLP protocol includes three parts, the Vtoken-Minting module, the SLP module, and the backend service.
+
+The user can call the mint/redeem/rebond method of the VtokenMinting module through the front end to mint ASTR into vASTR, or exchange vASTR back to ASTR. During the period of holding vASTR, users can enjoy staking benefits, which are reflected in the exchange rate of vASTR to ASTR. If the user has new pledge amounts in the pool during the redeem period, the user will be able to experience the process of fast redemption, and the new pledge amount will be returned to the users in front of the redeem queue first.
+
+The SLP module of Bifrost is responsible for communicating with the ParachainStaking module of the ASTR chain by sending cross-chain messages to perform operations such as delegate, delegate\_bond\_more, schedule\_delegator\_bond\_less, schedule\_revoke\_delegation, execute\_delegation\_request, cancel\_delegation\_request, schedule\_leave\_delegators, execute\_leave\_delegators, cancel\_leave\_delegators. The delegator account is generated by Bifrost's parachain address on the ASTR chain, and the corresponding sub-account is generated by calling the as\_derivative function of the utility module. All delegator and validator addresses are stored and used in the format of MultiLocation in the module.
+
+### Backend service function
+
+The SLP backend service is responsible for adjusting the exchange rate in each round, returning the due amount to the current redeem due user, checking the ledger, summarizing the pledge amount in a new round, and calling the corresponding SLP module function. In order to more flexibly handle the increase or decrease of users' pledge in each round, we will adopt a decentralized delegation relationship and a small-amount pledge strategy to increase the efficiency of the use of funds.
+
+#### At the start of Round
+
+1. Update round numbers
+2. Charge the custody fee, add interest (according to the dividend event, dividends before n+1 period), modify the exchange rate, and transfer the interest amount back to the exit account.
+3. Withdrawal of redemption due amount
+4. Repay the current due debt and transfer the remaining amount to the entry account for quick redemption.
+5. Query and compensate the reserve amount of handling fees for each operating account.
+
+#### Before Round ends
+
+1. Transfer the excess amount in the entry account to a different delegate, and perform the pledge operation. When pledging, pay attention to check if the ranking is in the bottom delegation. If so, add the delegating amount, or transfer the amount to another DApp Staking.
+2. Check the ledger, warn and adjust accordingly if there are discrepancies.
+
+#### Attention for staking operations:
+
+1. The staking amount is distributed among multiple delegation relationships of multiple delegates in a relatively even manner to facilitate each round of bond and redeem fund operations and improve the efficiency of fund use.
+2. Don't let the delegates fall into the bottom delegation group of DApp Stakings. It is necessary to maintain a real-time top lowest value of DApp Staking. In theory, each account should try to keep a certain percentage higher than this value, such as 15%.
+3. When comparing the difference in the number of redeems between the Bifrost chain and the ASTR chain, the number on the ASTR side should be greater than or equal to the number on the Bifrost side
+
+## Vtoken-Minting module
+
+The user can call the mint/redeem/rebond method of the VtokenMinting module through the front end to mint ASTR into vASTR, or exchange vASTR back to ASTR. During the period of holding vASTR, users can enjoy staking benefits, which are reflected in the exchange rate of vASTR to ASTR. If the user has new pledge amounts in the pool during the redeem period, the user will be able to experience the process of fast redemption, and the new pledge amount will be returned to the users in front of the redeem queue first.
+
+### Data Structure
+
+```rust
+#[derive(PartialEq, Eq, Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
+pub struct SubstrateLedger<Balance> {
+  /// The delegator account Id
+  pub account: MultiLocation,
+  /// The total amount of the delegator's balance that we are currently accounting for.
+  /// It's just `active` plus all the `unlocking` balances.
+  #[codec(compact)]
+  pub total: Balance,
+  /// The total amount of the delegator's balance that will be at stake in any forthcoming
+  /// rounds.
+  #[codec(compact)]
+  pub active: Balance,
+  /// Any balance that is becoming free, which may eventually be transferred out
+  /// of the delegator (assuming it doesn't get slashed first).
+  pub unlocking: Vec<UnlockChunk<Balance>>,
+}
+
+/// A type for substrate ledger updating entries
+#[derive(PartialEq, Eq, Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
+pub struct SubstrateLedgerUpdateEntry<Balance> {
+  /// The currency id of the delegator that needs to be update
+  pub currency_id: CurrencyId,
+  /// The delegator id that needs to be update
+  pub delegator_id: MultiLocation,
+  /// Update operation type
+  pub update_operation: SubstrateLedgerUpdateOperation,
+  /// The unlocking/bonding amount.
+  #[codec(compact)]
+  pub amount: Balance,
+  /// If this entry is an unlocking entry, it should have unlock_time value. If it is a bonding
+  /// entry, this field should be None. If it is a liquidize entry, this filed is the ongoing
+  /// timeunit when the xcm message is sent.
+  pub unlock_time: Option<TimeUnit>,
+}
+```
+
+### Storages
+
+* Delegator index ⇒ delegator multilocaition
+
+```rust
+pub type DelegatorsIndex2Multilocation<T> = StorageDoubleMap<CurrencyId, u16, MultiLocation>
+```
+
+* Delegator multilocaition ⇒ delegator index
+
+```rust
+pub type DelegatorsMultilocation2Index<T> = StorageDoubleMap<CurrencyId, MultiLocation, u16>
+```
+
+* The next delegator index of current CurrencyId
+
+```rust
+pub type DelegatorNextIndex<T> = StorageMap<CurrencyId, u16>
+```
+
+* The detailed leager informaiton of each vASTR parachain sub-accont.
+
+```rust
+pub type DelegatorLedgers<T> = StorageDoubleMap<CurrencyId, MultiLocation, Ledger<MultiLocation, BalanceOf<T>, MultiLocation>>
+```
+
+* After waiting for the cross-chain message receipt to be obtained,the message queue to the Delegator ledger needs to be updated.
+
+```rust
+pub type DelegatorLedgerXcmUpdateQueue<T> = StorageMap<QueryId， (LedgerUpdateEntry<BalanceOf<T>, MultiLocation, MultiLocation>, BlockNumberFor<T>)>
+```
+
+### Functions
+
+* Initialize the Delegator sub-account
+
+```rust
+fn initialize_delegator(origin: OriginFor<T>,currency_id: CurrencyId)
+```
+
+* Add one delegator
+
+```rust
+fn add_delegator( origin: OriginFor<T>, currency_id: CurrencyId, index: u16, who: MultiLocation )
+```
+
+* Reduce one delegator
+
+```rust
+fn remove_delegator( origin: OriginFor<T>, currency_id: CurrencyId, who: MultiLocation )
+```
+
+* Turn ASTR from the ASTR chain and call the pallet-xcm module on ASTR across the chain.
+
+```rust
+fn transfer_back( origin: OriginFor<T>, currency_id: CurrencyId, from: Box<MultiLocation>, to: Box<MultiLocation>,  amount: BalanceOf<T> )
+```
+
+* Transfer the ASTR from the designated account in Bifrost to the delegator on the ASTR chain, and call the xToken module on the Bifrost chain
+
+```rust
+fn transfer_to( origin: OriginFor<T>, currency_id: CurrencyId, from: Box<MultiLocation>, to: Box<MultiLocation>, amount: BalanceOf<T> )
+```
+
+* Synchronize the era information on the ASTR chain
+
+```rust
+fn update_ongoing_time_unit( origin: OriginFor<T>, currency_id: CurrencyId, time_unit: TimeUnit)
+```
+
+* Redeem users who repay the current ERA expiration
+
+```rust
+fn refund_currency_due_unbond( origin: OriginFor<T>, currency_id: CurrencyId )
+```
+
+* Replenish the fee reserve of the operating account
+
+```rust
+fn supplement_fee_reserve( origin: OriginFor<T>, currency_id: CurrencyId, dest: MultiLocation )
+```
+
+* Staking custody fees are collected from the interest, as well as adjusting the exchange rate of vASTR to ASTR
+
+```rust
+fn charge_host_fee_and_tune_vtoken_exchange_rate( origin: OriginFor<T>, currency_id: CurrencyId, value: BalanceOf<T>, who: MultiLocation )
+```
+
+* Upon receipt of an acknowledgement that the cross-chain message was executed successfully, this function is called to change the ledger of the corresponding delegator and delete the changed information in the staging queue.
+
+```rust
+pub fn confirm_delegator_ledger(
+      origin: OriginFor<T>,
+      query_id: QueryId,
+      response: Response,
+    )
+```
+
+* Calling bond\_and\_stake on an ASTR chain using delegator
+
+```rust
+pub fn bond_and_stake(
+      origin: OriginFor<T>,
+      who: MultiLocation,
+      contract_id: T::SmartContract,
+      #[pallet::compact] value: BalanceOf<T>,
+    )
+```
+
+* Calling unbond\_and\_unstake on an ASTR chain using delegator
+
+```rust
+pub fn unbond_and_unstake(
+  origin: OriginFor<T>,
+  who: MultiLocation,
+  contract_id: T::SmartContract,
+  #[pallet::compact] value: BalanceOf<T>,
+)
+```
+
+* Calling unbond\_and\_unstake on an ASTR chain using delegator
+
+```rust
+pub fn withdraw_unbonded(origin: OriginFor<T>,who: MultiLocation,)
+```
+
+* Calling nomination\_transfer on an ASTR chain using delegator
+
+```rust
+pub fn nomination_transfer(
+  origin: OriginFor<T>,
+  who: MultiLocation,
+  origin_contract_id: T::SmartContract,
+  #[pallet::compact] value: BalanceOf<T>,
+  target_contract_id: T::SmartContract,
+)
+```
+
+* Calling claim\_staker on an ASTR chain using delegator
+
+```rust
+pub fn claim_staker(
+  origin: OriginFor<T>,
+  who: MultiLocation,
+  contract_id: T::SmartContract,
+)
+```
