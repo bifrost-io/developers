@@ -1,0 +1,109 @@
+---
+title: vBNC
+description: Understanding vBNC
+---
+
+## What is vBNC?
+
+vBNC (voucher BNC) is a shadow token of staked BNC, with fully underlying BNC reserve and yield-bearing feature of BNC staking reward. Users can deposit BNC into Bifrost SLP protocol and get vBNC as return, vBNC can be traded in the open market or be redeemed back to BNC. Holding vBNC equals to holding the BNC staking position, staking rewards appreciate the exchange price of vBNC.
+
+<Callout title="Staking rewards">
+Staking rewards automatically add to the vBNC exchange price, no manual claim. The longer vBNC postion holding, the greater amount of BNC will be exchanged back when redemption.
+</Callout>
+
+## Why vBNC?
+
+<Callout type="success">
+**Liquid Staking**
+</Callout>
+
+The product allows users to delegate BNC for liquid vToken, (vBNC). vBNC will keep receiving staking rewards and can continue to be used in Bifrost and Polkadot-based DeFi for additional rewards.
+
+<Callout type="success">
+**Automatically Staking rewards capturing without scenario limitations**
+</Callout>
+
+SLP will issue Staking rewards to vBNC by adjusting the price of vBNC / BNC upwards. vBNC Rate = SLP Staking BNC (SUM) / vBNC Total Issuance.
+
+<Callout type="success">
+**Floating redemption period, vBNC ≤ 240 hours**
+</Callout>
+
+While BNC’s original chain Staking has a fixed revoke period, Bifrost SLP helps users to realize the possibility of **early vBNC redemption** by matching the real-time vBNC minting quantity with the redemption quantity at the protocol layer in form of a queue.
+
+<Callout type="success">
+**Multi-environment Compatibility**
+</Callout>
+
+vBNC is one of Substrate assets in Bifrost parachain, by using the [HRMP](https://wiki.polkadot.network/docs/learn-crosschain#xcmp-cross-chain-message-passing) channels between Bifrost and others, it can be easily utilized in EVM, WASM and Substarte competiable parachains.
+
+## How it works?
+
+vBNC is minted by Bifrost SLP pallet, so firstly users have to call XCM cross chain transfer BNC from Astar to Bifrost Parachain.
+
+### Mint vBNC
+
+1. Users initiate a vBNC mint order, SLP protocol transfers BNC to BNC Ready Pool (which is an order pool accumulates all mint and redeem orders), SLP mints vBNC for users;
+2. BNC Ready Pool matches Mint amount and Redeem amount;
+3. Oracle monitor matching results from BNC Ready Pool and send messages to BNC-Bifrost SLP addresses;
+4. Bifrost SLP addresses execute Staking to SLP BNC DApp staking set, Oracle queries the successful messages and send them back to Bifrost BNC Ready Pool, get ready for the next matching.
+
+About SLP Oracle/backend service: The SLP backend service is using ⅘ multisig nodes, responsible for adjusting the exchange rate in each round, returning the due amount to the current redeem due user, checking the ledger, summarizing the pledge amount in a new round, and calling the corresponding SLP module function. In order to more flexibly handle the increase or decrease of users' pledge in each round, we will adopt a decentralized delegation relationship and a small-amount pledge strategy to increase the efficiency of the use of funds.
+
+### Redeem vBNC
+
+1. Users initiate a vBNC redeem orders to BNC Ready Pool;
+2. BNC Ready Pool matches Redeem amount and Mint amount, and dispatches the remaining BNC to vBNC redeem orders, SLP destroys the redeemed vBNC amount;
+3. Oracle monitor redeem orders from Bifrost chain and send messages to BNC-Bifrost SLP addresses;
+4. Bifrost SLP addresses execute Redeem to SLP BNC DApp staking set and send redeemed BNC back to Bifrost parachain, Oracle queries all these messages and send them back to Bifrost BNC Ready Pool, get ready for the next round matching.
+
+### BNC Reward
+
+The BNC reward will be reinvested on BNC, and the Oracle will transmit the reward data to the BNC Ready Pool to adjust the vBNC exchange rate.
+
+$$
+vBNC rate=(StakedBNC+StakingReward)/vBNC Allocation
+$$
+
+💡 Read more detailed info in the following sections.
+
+***
+
+## SLP-vBNC Technology Implementation
+
+### Overall operation process
+
+The entire SLP protocol includes three parts, the Vtoken-Minting module, the SLP module, and the backend service.
+
+The user can call the mint/redeem/rebond method of the VtokenMinting module through the front end to mint BNC into vBNC, or exchange vBNC back to BNC. During the period of holding vBNC, users can enjoy staking benefits, which are reflected in the exchange rate of vBNC to BNC. If the user has new pledge amounts in the pool during the redeem period, the user will be able to experience the process of fast redemption, and the new pledge amount will be returned to the users in front of the redeem queue first.
+
+The SLP module of Bifrost is responsible for communicating with the ParachainStaking module of the BNC chain by sending cross-chain messages to perform operations such as delegate, delegate\_bond\_more, schedule\_delegator\_bond\_less, schedule\_revoke\_delegation, execute\_delegation\_request, cancel\_delegation\_request, schedule\_leave\_delegators, execute\_leave\_delegators, cancel\_leave\_delegators. The delegator account is generated by Bifrost's parachain address on the BNC chain, and the corresponding sub-account is generated by calling the as\_derivative function of the utility module. All delegator and validator addresses are stored and used in the format of MultiLocation in the module.
+
+### Backend service function
+
+The SLP backend service is responsible for adjusting the exchange rate in each round, returning the due amount to the current redeem due user, checking the ledger, summarizing the pledge amount in a new round, and calling the corresponding SLP module function. In order to more flexibly handle the increase or decrease of users' pledge in each round, we will adopt a decentralized delegation relationship and a small-amount pledge strategy to increase the efficiency of the use of funds.
+
+#### At the start of Round
+
+1. Update round numbers
+2. Charge the custody fee, add interest (according to the dividend event, dividends before n+1 period), modify the exchange rate, and transfer the interest amount back to the exit account.
+3. Withdrawal of redemption due amount
+4. Repay the current due debt and transfer the remaining amount to the entry account for quick redemption.
+5. Query and compensate the reserve amount of handling fees for each operating account.
+
+#### Before Round ends
+
+1. Transfer the excess amount in the entry account to a different delegate, and perform the pledge operation. When pledging, pay attention to check if the ranking is in the bottom delegation. If so, add the delegating amount, or transfer the amount to another DApp Staking.
+2. Check the ledger, warn and adjust accordingly if there are discrepancies.
+
+#### Attention for staking operations:
+
+1. The staking amount is distributed among multiple delegation relationships of multiple delegates in a relatively even manner to facilitate each round of bond and redeem fund operations and improve the efficiency of fund use.
+2. Don't let the delegates fall into the bottom delegation group of DApp Stakings. It is necessary to maintain a real-time top lowest value of DApp Staking. In theory, each account should try to keep a certain percentage higher than this value, such as 15%.
+3. When comparing the difference in the number of redeems between the Bifrost chain and the BNC chain, the number on the BNC side should be greater than or equal to the number on the Bifrost side
+
+## Vtoken-Minting module
+
+The user can call the mint/redeem/rebond method of the VtokenMinting module through the front end to mint BNC into vBNC, or exchange vBNC back to BNC. During the period of holding vBNC, users can enjoy staking benefits, which are reflected in the exchange rate of vBNC to BNC. If the user has new pledge amounts in the pool during the redeem period, the user will be able to experience the process of fast redemption, and the new pledge amount will be returned to the users in front of the redeem queue first.
+
+### Data Structure

@@ -2,6 +2,7 @@
   "pages": [
     "veth",
     "vdot",
+    "vbnc",
     "vksm",
     "vglmr",
     "vmovr",
