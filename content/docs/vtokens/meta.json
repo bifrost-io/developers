@@ -4,10 +4,10 @@
     "vdot",
     "vbnc",
     "vksm",
-    "vglmr",
-    "vmovr",
     "vmanta",
-    "vastr"
+    "vastr",
+    "vglmr",
+    "vmovr"
   ],
   "defaultOpen": false
 }
