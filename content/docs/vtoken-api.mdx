@@ -1,0 +1,340 @@
+---
+title: vToken APIs
+description: Access onchain data for vTokens
+---
+
+There are three ways to query vToken exchange price:
+
+1. Use the Bifrost Runtime API, which is the most up-to-date and accurate method.
+2. Call EVM contract on Moonbeam.
+3. API for Frontend (with more vToken related storages)
+
+### Bifrost Runtime API (Get vToken Exchange Rate)
+
+[<mark style="color:purple;">https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fbifrost-polkadot-rpc.dwellir.com#/runtime</mark>](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fbifrost-polkadot-rpc.dwellir.com#/runtime)
+
+`vtokenMintingRuntimeApi`
+
+1. `getCurrencyAmountByVCurrencyAmount`
+2. `getVCurrencyAmountByCurrencyAmount`
+
+```
+<img src="https://757947912-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FJFtVsA5N3spWTWKvFvv0%2Fuploads%2F0sY8BSE5I5OVjYhuHxbF%2Fimage.png?alt=media&#x26;token=b3e053da-3de8-438d-bca5-b9eaf18809f0" alt=""><figcaption></figcaption>
+```
+
+As the showcase above, `token2:0` is DOT and `vtoken2:0` is vDOT on Bifrost Polkadot, getCurrencyAmountByVCurrencyAmount is to input vDOT amount (with decimals) to query the exchange price in DOT.
+
+<Callout type="info">
+Check the Token indexs via [<mark style="color:purple;">here</mark>](https://docs.bifrost.io/faq/what-are-vtokens/mint-redeem-vtoken-without-dapp#token-indexes-on-bifrost-polkadot).
+</Callout>
+
+### Bifrost Runtime API (Get vToken Price from Stable Swap)
+
+**Bifrost Runtime API (Get vToken Price from Stable Swap)**
+
+`_calcOutGivenIn`/`_calcInGivenOut` is the method we use to query vToken prices from the Stable Pool, querying the price from DOT/vDOT stable pool as shown in the example below:
+
+```jsx
+export const postStablePrice = ({
+  currentStablePool,
+  amount,
+  sourceToken,
+  type,
+}) => {
+  const amountIn = bn(amount).multipliedBy(getDecimalsWithZero(sourceToken));
+  const { poolBalances, precision, futureA } = currentStablePool;
+
+  const isToken = currentStablePool?.token0 === sourceToken;
+  const rateToken = isToken ? currentStablePool.rate0 : currentStablePool.rate1;
+  const rateVToken = isToken
+    ? currentStablePool.rate1
+    : currentStablePool.rate0;
+
+  if (type === 'amountIn') {
+    const price = _calcOutGivenIn(
+      bn(futureA),
+      [bn(poolBalances[0]), bn(poolBalances[1])],
+      isToken ? 0 : 1,
+      isToken ? 1 : 0,
+      amountIn.multipliedBy(rateToken[1]).div(rateToken[0]),
+    );
+
+    return price
+      .multipliedBy(rateVToken[0])
+      .div(rateVToken[1])
+      .multipliedBy(0.997)
+      .div(precision)
+      .toString();
+  } else {
+    const price = _calcInGivenOut(
+      bn(futureA),
+      [bn(poolBalances[0]), bn(poolBalances[1])],
+      isToken ? 0 : 1,
+      isToken ? 1 : 0,
+      amountIn.multipliedBy(rateVToken[1]).div(rateVToken[0]),
+    );
+
+    return price
+      .multipliedBy(rateToken[0])
+      .div(rateToken[1])
+      .div(0.997)
+      .div(precision)
+      .toString();
+  }
+};
+```
+
+Some parameter you need to get from [Bifrost storage](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fhk.p.bifrost-rpc.liebi.com%2Fws#/chainstate) as explained below:
+
+You can find `poolBalances` and `futureA` from stableAsset.pool:
+
+```
+<figure><img src="https://757947912-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FJFtVsA5N3spWTWKvFvv0%2Fuploads%2FThmdybzBCOkuLI9RW0FN%2Fimage.png?alt=media&#x26;token=98de3ac6-51bd-4f9c-b545-d2cc7c0b7dec" alt=""><figcaption></figcaption></figure>
+```
+
+You can find `rateToken` from stableAsset.tokenRateCaches:
+
+```
+<figure><img src="https://757947912-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FJFtVsA5N3spWTWKvFvv0%2Fuploads%2FndklDFoQVarBUQU3JRv2%2Fimage.png?alt=media&#x26;token=a8751e36-29f1-4425-a8dc-3f59e60bd94b" alt=""><figcaption></figcaption></figure>
+```
+
+Below is the full example of how we get vDOT-DOT price from Stable Pool:
+
+```
+<figure><img src="https://757947912-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FJFtVsA5N3spWTWKvFvv0%2Fuploads%2FnwdTbyM5sooj2efLBnLZ%2Fimage.png?alt=media&#x26;token=e1aabec5-0f6d-4ab1-96f3-598cc423fbb8" alt=""><figcaption></figcaption></figure>
+```
+
+```jsx
+1. DOT -> vDOT
+poolBalances: [6,552,833,658,045,7199,130,072,564,817,861] 
+precision: 10,000,000,000 
+futureA: 5,000
+
+so  const price = _calcOutGivenIn(
+      bn(futureA),
+      [bn(poolBalances[0]), bn(poolBalances[1])],
+      isToken ? 0 : 1,
+      isToken ? 1 : 0,
+      amountIn.multipliedBy(rateToken[1]).div(rateToken[0]),
+    ) // 10034398626 ;
+    
+  and final  price
+      .multipliedBy(rateVToken[0])
+      .div(rateVToken[1])
+      .multipliedBy(0.997)
+      .div(precision)
+      .toString();  // 0.679974070...
+      
+      
+2. if vDOT-> DOT 
+
+price === 14662323117
+// price
+      .multipliedBy(rateVToken[0])
+      .div(rateVToken[1])
+      .multipliedBy(0.997)
+      .div(precision)
+      .toString(); //1.4618336147649
+```
+
+```jsx
+// Computes how many tokens can be taken out of a pool if `tokenAmountIn` are sent, given the current balances.
+// The amplification parameter equals: A n^(n-1)
+export const _calcOutGivenIn = (
+  amplificationParameter: BigNumber,
+  balances: BigNumber[],
+  tokenIndexIn: number,
+  tokenIndexOut: number,
+  tokenAmountIn: BigNumber,
+  options?: {
+    swapFeePercentage: BigNumber;
+    tokenInDecimals: number;
+  },
+): BigNumber => {
+  /**************************************************************************************************************
+   // outGivenIn token x for y - polynomial equation to solve                                                   //
+   // ay = amount out to calculate                                                                              //
+   // by = balance token out                                                                                    //
+   // y = by - ay (finalBalanceOut)                                                                             //
+   // D = invariant                                               D                     D^(n+1)                 //
+   // A = amplification coefficient               y^2 + ( S - ----------  - D) * y -  ------------- = 0         //
+   // n = number of tokens                                    (A * n^n)               A * n^2n * P              //
+   // S = sum of final balances but y                                                                           //
+   // P = product of final balances but y                                                                       //
+   **************************************************************************************************************/
+  // Amount out, so we round down overall.
+  if (options) {
+    // Fees are subtracted before scaling
+    const scalingFactor = 18 - options.tokenInDecimals;
+    const scaledAmountIn = scale(tokenAmountIn, -scalingFactor);
+    const scaledAmountInWithoutFees = fp.sub(
+      scaledAmountIn,
+      fp.mulUp(scaledAmountIn, options.swapFeePercentage),
+    );
+
+    tokenAmountIn = scale(scaledAmountInWithoutFees, scalingFactor);
+  }
+  // Given that we need to have a greater final balance out, the invariant needs to be rounded up
+  const invariant = _calculateInvariant(amplificationParameter, balances, true);
+
+  balances[tokenIndexIn] = fp.add(balances[tokenIndexIn], tokenAmountIn);
+
+  const finalBalanceOut = _getTokenBalanceGivenInvariantAndAllOtherBalances(
+    amplificationParameter,
+    balances,
+    invariant,
+    tokenIndexOut,
+  );
+
+  balances[tokenIndexIn] = fp.sub(balances[tokenIndexIn], tokenAmountIn);
+
+  return fp.sub(fp.sub(balances[tokenIndexOut], finalBalanceOut), math.ONE);
+};
+
+// Computes how many tokens must be sent to a pool if `tokenAmountOut` are sent given the
+// current balances, using the Newton-Raphson approximation.
+// The amplification parameter equals: A n^(n-1)
+export const _calcInGivenOut = (
+  amplificationParameter: BigNumber,
+  balances: BigNumber[],
+  tokenIndexIn: number,
+  tokenIndexOut: number,
+  tokenAmountOut: BigNumber,
+  options?: {
+    swapFeePercentage: BigNumber;
+    tokenInDecimals: number;
+  },
+): BigNumber => {
+  /**************************************************************************************************************
+   // inGivenOut token x for y - polynomial equation to solve                                                   //
+   // ax = amount in to calculate                                                                               //
+   // bx = balance token in                                                                                     //
+   // x = bx + ax (finalBalanceIn)                                                                              //
+   // D = invariant                                                D                     D^(n+1)                //
+   // A = amplification coefficient               x^2 + ( S - ----------  - D) * x -  ------------- = 0         //
+   // n = number of tokens                                     (A * n^n)               A * n^2n * P             //
+   // S = sum of final balances but x                                                                           //
+   // P = product of final balances but x                                                                       //
+   **************************************************************************************************************/
+
+  // Amount in, so we round up overall.
+
+  // Given that we need to have a greater final balance in, the invariant needs to be rounded up
+  const invariant = _calculateInvariant(amplificationParameter, balances, true);
+
+  balances[tokenIndexOut] = fp.sub(balances[tokenIndexOut], tokenAmountOut);
+
+  const finalBalanceIn = _getTokenBalanceGivenInvariantAndAllOtherBalances(
+    amplificationParameter,
+    balances,
+    invariant,
+    tokenIndexIn,
+  );
+
+  balances[tokenIndexOut] = fp.add(balances[tokenIndexOut], tokenAmountOut);
+
+  let amountIn = fp.add(
+    fp.sub(finalBalanceIn, balances[tokenIndexIn]),
+    math.ONE,
+  );
+
+  if (options) {
+    // Fees are added after scaling
+    const scalingFactor = 18 - options.tokenInDecimals;
+    const scaledAmountIn = scale(amountIn, -scalingFactor);
+    const scaledAmountInWithFees = fp.divUp(
+      scaledAmountIn,
+      fp.sub(fp.ONE, options.swapFeePercentage),
+    );
+    amountIn = scale(scaledAmountInWithFees, scalingFactor);
+  }
+
+  return amountIn;
+};
+```
+
+### EVM contract on Moonbeam
+
+Query the exchange rate from SLPx contract on Moonbeam:
+
+[<mark style="color:purple;">https://github.com/bifrost-io/slpx-contracts?tab=readme-ov-file#xcmoracle</mark>](https://github.com/bifrost-io/slpx-contracts?tab=readme-ov-file#xcmoracle)
+
+Check more details at [<mark style="color:purple;">here</mark>](https://docs.bifrost.io/for-builders/build-with-slpx/xcm-oracle).
+
+### API for Frontend
+
+**`exchangeRatio`** is to get Token by vToken
+
+[<mark style="color:purple;">Api 1</mark>](https://dapi.bifrost.io/api/staking): Includes the following queryable interfaces
+
+```
+    {
+      "contractAddress": "",
+      "symbol": "vDOT",
+      "slug": "voucher-dot",
+      "baseSlug": "polkadot",
+      "unstakingTime": 2592000,
+      "users": 4455,
+      "apr": 15.34,
+      "fee": 10,
+      "price": 15.0575651785682,
+      "exchangeRatio": 1.43132748845706,
+      "supply": 7072122.86098662
+    },
+```
+
+[<mark style="color:purple;">Api 2</mark>](https://dapi.bifrost.io/api/site): Includes the following queryable interfaces
+
+```json
+{
+  "tvl": 128783099,
+  "addresses": 89168,
+  "revenue": 3886150,
+    "vDOT": {
+    "apy": "15.34",
+    "apyBase": "15.17",
+    "apyReward": "0.17",
+    "tvl": 74398732.4975793,
+    "tvm": 7072122.86098662,
+    "totalIssuance": 4940953.70767365,
+    "holders": 4455,
+    "holdersList": [
+      {
+        "name": "vDOT",
+        "holders": 2551,
+        "unique_id": "asset_registry/9658598ef1eace56a0662d4a067a260e42b36f2a",
+        "network": "bifrost",
+        "url": "<https://bifrost.subscan.io/custom_token?unique_id=asset_registry/9658598ef1eace56a0662d4a067a260e42b36f2a>"
+      },
+      {
+        "name": "vDOT",
+        "holders": 389,
+        "unique_id": "standard_assets/29085784439601774464560083082574142143",
+        "network": "moonbeam",
+        "url": "<https://moonbeam.subscan.io/assets/29085784439601774464560083082574142143>"
+      },
+      {
+        "name": "vDOT",
+        "holders": 223,
+        "unique_id": "standard_assets/18446744073709551624",
+        "network": "astar",
+        "url": "<https://astar.subscan.io/assets/18446744073709551624>"
+      },
+      {
+        "name": "vDOT",
+        "holders": 9,
+        "unique_id": "standard_assets/313524628741076911470961827389955394913",
+        "network": "polkadex",
+        "url": "<https://polkadex.subscan.io/assets/313524628741076911470961827389955394913>"
+      },
+      {
+        "name": "vDOT",
+        "holders": 1283,
+        "unique_id": "asset_registry/37444e63907d968b4a4947cb38ce9c019e6b6310",
+        "network": "hydration",
+        "url": "<https://hydration.subscan.io/custom_token?unique_id=asset_registry/37444e63907d968b4a4947cb38ce9c019e6b6310>"
+      }
+    ]
+  },
+}
+```
