@@ -6,12 +6,12 @@ description: Understanding Bifrost SLPx Protocol
 ## Crosschain architecture and SLPx
 
 ### Bifrost's Unique Approach
-Unlike Ethereum's liquid staking protocols, Bifrost from inception has supported Polkadot's Omni-chain ecosystem. This strategic choice allows Bifrost to address the cross-chain friction users face when minting and using vTokens across the Omni-chain.
+Unlike Ethereum's liquid staking protocols, Bifrost from inception has supported Polkadot's Omni-chain ecosystem. This strategic choice allows Bifrost to address the crosschain friction users face when minting and using vTokens across the Omni-chain.
 
 ### Why use a crosschain architecture?
-To understand the need for cross-chain architecture, consider a user who intends to mint vGLMR. They must first transfer GLMR from Moonbeam to the Bifrost-Polkadot chain. After minting, if the user wishes to use it on Moonbeam, they must transfer the vGLMR back to Moonbeam. This complex process requires multiple transactions, making it cumbersome for the user.
+To understand the need for crosschain architecture, consider a user who intends to mint vETH. They must first transfer ETH from Ethereum to the Bifrost-Polkadot chain. After minting, if the user wishes to use it on Ethereum, they must transfer the vETH back to Ethereum. This complex process requires multiple transactions, making it cumbersome for the user.
 
-However, Bifrost's cross-chain architecture and SLPx module simplify these complexities. They offer users a seamless experience by combining all vToken minting processes into one transaction on a single chain.
+However, Bifrost's crosschain architecture and SLPx module simplify these complexities. They offer users a seamless experience by combining all vToken minting processes into one transaction on a single chain.
 
 ![SLPx architecture](/bifrost-slpx-architecture.jpeg)
 
@@ -19,19 +19,19 @@ However, Bifrost's cross-chain architecture and SLPx module simplify these compl
 
 Under the crosschain architecture, instead of deploying SLP modules on multiple chains, Bifrost allows other chains to utilize the existing SLP modules on the Bifrost-Polkadot, Bifrost-Kusama, and Ethereum chains through crosschain remote calls.
 
-For instance, to mint vGLMR, users only need to initiate a minting request on Moonbeam. The remote call module on Moonbeam will cross-chain transfer the user's GLMR to the Bifrost-Polkadot chain, where it is minted into vGLMR. After minting, vGLMR is transferred back to the Moonbeam chain.
+For instance, to mint vETH, users only need to initiate a minting request on Ethereum. The remote call module on Ethereum will crosschain transfer the user's ETH to the Bifrost-Polkadot chain, where it is minted into vETH. After minting, vETH is transferred back to the Ethereum chain.
 
-Throughout this process, users do not perceive the underlying crosschain operations; they only experience the seamless minting of GLMR into vGLMR on Moonbeam.
+Throughout this process, users do not perceive the underlying crosschain operations; they only experience the seamless minting of ETH into vETH on Ethereum.
 
 ![Bifrost minting process](/bifrost-minting.png)
 
-The redemption of vGLMR to GLMR and swaps follows a similar mechanism.
+The redemption of vETH to ETH and swaps follows a similar mechanism.
 
 Like a chain franchise, this structure resembles a "headquarters + branch" system. Users interact with the branches on different chains. These branches communicate with the headquarters to obtain results, which are then presented to the users. This abstraction allows users to interact with the branches without being aware of the underlying crosschain operations.
 
 ![Bifrost multichain](/bifrost-multichain.png)
 
-## Advantages of Cross-chain Architecture
+## Advantages of Crosschain Architecture
 
 ### Unified Liquidity
 
